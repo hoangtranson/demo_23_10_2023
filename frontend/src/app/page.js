@@ -33,28 +33,36 @@ export default function Home() {
     }
   }, [currentInput]);
 
-  const handleVerifyClick = () => {
-    const code = `${firstInputRef.current.value}${secondInputRef.current.value}${thirdInputRef.current.value}${fourthInputRef.current.value}`;
-    fetch("http://localhost:3001/verify", {
+  const handleVerifyClick = async () => {
+    try {
+      const code = getCodeFromInputFields();
+      await verifyCode(code);
+      setCardValidated(true);
+    } catch (error) {
+      console.error("API call error:", error);
+      setApiError(true);
+    }
+  };
+  
+  const getCodeFromInputFields = () => {
+    const code = [
+      firstInputRef.current.value,
+      secondInputRef.current.value,
+      thirdInputRef.current.value,
+      fourthInputRef.current.value,
+    ].join("");
+    return code;
+  };
+  
+  const verifyCode = async (code) => {
+    const response = await fetch("http://localhost:3001/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ code }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Something went wrong');
-      })
-      .then((data) => {
-        setCardValidated(true);
-      })
-      .catch((error) => {
-        console.error("API call error:", error);
-        setApiError(true);
-      });
+    });
+    return response;
   };
 
   return (
@@ -105,9 +113,10 @@ export default function Home() {
         />
       </div>
 
-      {
+      {/* TODO implement HTML CSS for code not correct */}
+      {/* {
         isApiError ? <p className="card__error">Something went wrong</p> : ''
-      }
+      } */}
       
       <button
         type="button"
