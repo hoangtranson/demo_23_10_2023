@@ -1,5 +1,6 @@
 # Authorization App
 
+![Alt text](image.png)
 
 We need to verify code number as part of security after user login.
 
